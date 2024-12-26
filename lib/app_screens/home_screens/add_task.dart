@@ -57,11 +57,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     hintText: "Enter Task Name",
                   ),
                   kheightBoxed(),
+                  kheightBoxed(),
                   TaskField(
                     controller: provider.taskDescriptions,
                     hintText: "Enter Description",
                     maxLine: 2,
                   ),
+                  kheightBoxed(),
                   kheightBoxed(),
                   Row(
                     children: [
@@ -81,6 +83,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   FloatingButton(
                     width: double.infinity,
                     onTap: () {
+
                       provider.saveAndUpdate(widget.isUpdate, widget.task, context);
                     },
                     text: widget.isUpdate ? 'Update' : "Save",

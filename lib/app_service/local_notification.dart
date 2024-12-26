@@ -1,35 +1,39 @@
-// First, add these dependencies to pubspec.yaml:
-// flutter_local_notifications: ^16.3.0
-// timezone: ^0.9.2
-
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
-  static final NotificationService _notificationService = NotificationService._internal();
+  static final NotificationService _instance = NotificationService._internal();
+
   factory NotificationService() {
-    return _notificationService;
+    return _instance;
   }
+
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
+    final DarwinInitializationSettings initializationSettingsIOS =
+    DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
       requestAlertPermission: false,
-     );
+      onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+    );
 
     final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
 
+    // Initialize timezone
     tz.initializeTimeZones();
 
     await flutterLocalNotificationsPlugin.initialize(
@@ -40,11 +44,34 @@ class NotificationService {
 
   Future<void> requestIOSPermissions() async {
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
       alert: true,
       badge: true,
       sound: true,
+    );
+  }
+
+  NotificationDetails _createNotificationDetails() {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'task_channel',
+      'Task Reminders',
+      channelDescription: 'Channel for task reminders',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    return const NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
     );
   }
 
@@ -54,37 +81,32 @@ class NotificationService {
     required String body,
     required DateTime scheduledDate,
   }) async {
-    // Create the notification details
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'task_channel', // channel Id
-      'Task Reminders', // channel Name
-      channelDescription: 'Channel for task reminders',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
+    try {
+      final notificationDetails = _createNotificationDetails();
 
-    const DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tz.TZDateTime.from(scheduledDate, tz.local),
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
+        Fluttertoast.showToast(
+          msg: "$e",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
 
-    // Schedule the notification
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledDate, tz.local),
-      platformChannelSpecifics,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
+    }
   }
 
   Future<void> cancelNotification(int id) async {
@@ -95,7 +117,12 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  void onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
+  void onDidReceiveLocalNotification(
+      int id,
+      String? title,
+      String? body,
+      String? payload,
+      ) {
     // Handle iOS notification when app is in foreground
     print('Notification received: $id, $title, $body, $payload');
   }

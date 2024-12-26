@@ -96,7 +96,7 @@ Navigator.pop(context);
                         style: GoogleFonts.roboto().copyWith(
                           fontSize: 17.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
 

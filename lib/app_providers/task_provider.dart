@@ -255,9 +255,7 @@ class TaskProvider with ChangeNotifier {
             scheduledDate: scheduledDateTime,
           );
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${task.taskName} is updated')),
-          );
+
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -292,6 +290,9 @@ class TaskProvider with ChangeNotifier {
         });
       }
     } catch (error) {
+      // showDialog(context: context, builder: (builder){
+      //   return AlertDialog(content: SelectableText('Error: ${error.toString()}'),);
+      // });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${error.toString()}')),
       );
@@ -306,70 +307,7 @@ class TaskProvider with ChangeNotifier {
     selectedTime = null;
   }
 
-  // saveAndUpdate(isUpdate,Task task,context)async{
-  //   if (taskName.text.isEmpty) {
-  //     showInfo("Task Name is required", Colors.black);
-  //   } else if (taskDescriptions.text.isEmpty) {
-  //     showInfo("Task Description is required", Colors.black);
-  //   } else if (selectedDate == null || selectedTime == null) {
-  //     showInfo("Date and Time are required", Colors.black);
-  //   } else {
-  //     // Combine date and time
-  //     final DateTime scheduledDateTime = DateTime(
-  //       selectedDate!.year,
-  //       selectedDate!.month,
-  //       selectedDate!.day,
-  //       selectedTime!.hour,
-  //       selectedTime!.minute,
-  //     );
-  //
-  //     // Create or update task
-  //     await _notificationService.scheduleTaskNotification(
-  //       id: task.id!,
-  //       title: 'Task Reminder: ${task.taskName}',
-  //       body: task.description,
-  //       scheduledDate: scheduledDateTime,
-  //     );
-  //
-  //     showLoader(context);
-  //     isUpdate
-  //         ? updateTask(
-  //       Task(
-  //         id: task.id,
-  //         taskName: taskName.text,
-  //         description: taskDescriptions.text,
-  //         dateAdded: getFormattedDateTime(),
-  //       ),
-  //     ).whenComplete(() {
-  //
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('${task.taskName} is updated')),
-  //       );
-  //       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder:
-  //           (context)=>const HomeScreen())
-  //           , (predicate)=>false);
-  //       taskName.clear();
-  //       taskDescriptions.clear();
-  //       selectedDate=null;
-  //       selectedTime=null;
-  //     })
-  //         : uploadTask(
-  //       Task(
-  //         taskName: taskName.text,
-  //         description: taskDescriptions.text,
-  //         dateAdded: getFormattedDateTime(),
-  //       ),
-  //     ).whenComplete(() {
-  //       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder:
-  //           (context)=>const HomeScreen())
-  //           , (predicate)=>false);
-  //   taskName.clear();
-  //       taskDescriptions.clear();
-  //       selectedDate=null;
-  //       selectedTime=null;
-  //     });
-  //   }
-  // }
+
 updateFields(isUpdate,Task task){
 
   if (isUpdate) {

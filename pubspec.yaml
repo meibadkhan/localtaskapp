@@ -37,9 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   responsive_sizer:
   provider:
-  flutter_local_notifications:
-
-  timezone:
+  flutter_local_notifications: ^16.3.0
+  timezone: ^0.9.2
 
   fluttertoast:
   intl:

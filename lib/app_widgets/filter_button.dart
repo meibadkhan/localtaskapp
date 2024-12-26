@@ -18,7 +18,7 @@ class FilterButtons extends StatelessWidget {
         children: [
           Text(
             "Sort by: ",
-            style: GoogleFonts.roboto().copyWith(fontSize: 17.sp),
+            style: GoogleFonts.roboto().copyWith(fontSize: 15.sp),
           ),
           Consumer<TaskProvider>(
             builder: (context, provider, child) {
@@ -49,9 +49,9 @@ class FilterButtons extends StatelessWidget {
                     padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                     child: Text(
-                      'Completed',
+                      'Complete',
                       style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w500),
+                          fontSize: 13.sp, fontWeight: FontWeight.w500),
                     ),
                   ),
                   Padding(
@@ -60,7 +60,7 @@ class FilterButtons extends StatelessWidget {
                     child: Text(
                       'Pending',
                       style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w500),
+                          fontSize: 13.sp, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
